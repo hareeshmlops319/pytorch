@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Personal study notes for PyTorch fundamentals and training workflows">
+        <meta name="author" content="Haree">
+        
+        <link rel="shortcut icon" href="img/favicon.ico">
+        <title>PyTorch in One Hour Notes</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/fontawesome.min.css" rel="stylesheet">
+        <link href="css/brands.min.css" rel="stylesheet">
+        <link href="css/solid.min.css" rel="stylesheet">
+        <link href="css/v4-font-face.min.css" rel="stylesheet">
+        <link href="css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body class="homepage">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href=".">PyTorch in One Hour Notes</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/edit/master/docs/index.md" class="nav-link">Edit on production-llm
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#pytorch-in-one-hour-study-notes" class="nav-link">PyTorch in One Hour — Study Notes</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#contents" class="nav-link">Contents</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#1-what-pytorch-is" class="nav-link">1. What PyTorch Is</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#2-tensors" class="nav-link">2. Tensors</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#3-models-as-computation-graphs" class="nav-link">3. Models as Computation Graphs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#4-autograd-automatic-differentiation" class="nav-link">4. Autograd (Automatic Differentiation)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#5-building-neural-networks-with-nnmodule" class="nav-link">5. Building Neural Networks with nn.Module</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#6-efficient-data-loading" class="nav-link">6. Efficient Data Loading</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#7-a-typical-training-loop" class="nav-link">7. A Typical Training Loop</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#8-saving-loading-models" class="nav-link">8. Saving &amp; Loading Models</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#9-training-on-gpus" class="nav-link">9. Training on GPUs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#10-quick-reference-gotchas" class="nav-link">10. Quick Reference &amp; Gotchas</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#11-further-reading-from-the-tutorial" class="nav-link">11. Further Reading (from the tutorial)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="pytorch-in-one-hour-study-notes">PyTorch in One Hour — Study Notes</h1>
+<blockquote>
+<p>Personal study notes based on <strong>"PyTorch in One Hour: From Tensors to Training Neural Networks on Multiple GPUs"</strong> by Sebastian Raschka (Jul 2025).
+Original tutorial: https://sebastianraschka.com/teaching/pytorch-1h/
+These notes summarize the concepts in my own words; read the original for full explanations, figures, and outputs.</p>
+</blockquote>
+<hr />
+<h2 id="contents">Contents</h2>
+<ol>
+<li>What PyTorch is</li>
+<li>Tensors</li>
+<li>Computation graphs</li>
+<li>Autograd</li>
+<li>Building models with <code>nn.Module</code></li>
+<li>Datasets &amp; DataLoaders</li>
+<li>The training loop</li>
+<li>Saving &amp; loading</li>
+<li>GPUs: single and multi-GPU (DDP)</li>
+<li>Quick reference &amp; gotchas</li>
+<li>Further reading</li>
+</ol>
+<hr />
+<h2 id="1-what-pytorch-is">1. What PyTorch Is</h2>
+<p><strong>Three core components:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it gives you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Tensor library</strong></td>
+<td>NumPy-like arrays that can run on CPU <em>or</em> GPU</td>
+</tr>
+<tr>
+<td><strong>Autograd engine</strong></td>
+<td>Automatic gradient computation for backpropagation</td>
+</tr>
+<tr>
+<td><strong>Deep learning utilities</strong></td>
+<td>Layers, loss functions, optimizers, data loading</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Terminology hierarchy:</strong> AI ⊃ Machine Learning ⊃ Deep Learning (deep neural nets) — LLMs live inside deep learning.</p>
+<p><strong>Supervised learning workflow:</strong> train on labeled data → evaluate → predict labels for new data.</p>
+<h3 id="installation-tips">Installation tips</h3>
+<ul>
+<li>Use a Python version 1–2 releases behind the latest (better library support).</li>
+<li><code>pip install torch</code> — or use the selector at pytorch.org for a specific CUDA build.</li>
+<li>Sanity checks:</li>
+<li><code>torch.__version__</code></li>
+<li><code>torch.cuda.is_available()</code> → NVIDIA GPU</li>
+<li><code>torch.backends.mps.is_available()</code> → Apple Silicon</li>
+<li>No GPU? Google Colab offers free, time-limited GPU runtimes.</li>
+</ul>
+<hr />
+<h2 id="2-tensors">2. Tensors</h2>
+<ul>
+<li>A tensor generalizes scalars/vectors/matrices to N dimensions.</li>
+<li>Rank 0 = scalar, rank 1 = vector, rank 2 = matrix, rank 3+ = "3D tensor", etc.</li>
+<li>Think of them as <strong>data containers</strong> with GPU support + gradient tracking.</li>
+</ul>
+<h3 id="creating-tensors">Creating tensors</h3>
+<pre><code class="language-python">import torch
+
+s = torch.tensor(7)                  # 0D
+v = torch.tensor([1, 2, 3])          # 1D
+m = torch.tensor([[1, 2], [3, 4]])   # 2D
+</code></pre>
+<h3 id="data-types">Data types</h3>
+<ul>
+<li>Python ints → <code>torch.int64</code></li>
+<li>Python floats → <code>torch.float32</code> (default; good precision/speed trade-off, GPU-optimized)</li>
+<li>Convert with <code>.to()</code>:</li>
+</ul>
+<pre><code class="language-python">v_float = v.to(torch.float32)
+</code></pre>
+<h3 id="essential-operations">Essential operations</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.shape</code></td>
+<td>Dimensions</td>
+</tr>
+<tr>
+<td><code>.reshape(r, c)</code> / <code>.view(r, c)</code></td>
+<td>Change shape (<code>.view</code> is very common)</td>
+</tr>
+<tr>
+<td><code>.T</code></td>
+<td>Transpose (not the same as reshape!)</td>
+</tr>
+<tr>
+<td><code>a.matmul(b)</code> or <code>a @ b</code></td>
+<td>Matrix multiplication</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Why duplicate APIs? PyTorch inherited Lua Torch conventions, then added NumPy-style aliases.</p>
+</blockquote>
+<hr />
+<h2 id="3-models-as-computation-graphs">3. Models as Computation Graphs</h2>
+<ul>
+<li>A <strong>computation graph</strong> is a directed graph of the operations that produce an output (and loss).</li>
+<li>PyTorch builds this graph <strong>dynamically in the background</strong> as you run operations.</li>
+<li>The graph is what makes gradient computation possible.</li>
+</ul>
+<p>Example idea — logistic regression forward pass:
+<code>input × weight + bias → sigmoid → compare with label → loss</code></p>
+<hr />
+<h2 id="4-autograd-automatic-differentiation">4. Autograd (Automatic Differentiation)</h2>
+<ul>
+<li>Set <code>requires_grad=True</code> on parameters you want gradients for.</li>
+<li>Backpropagation = applying the <strong>chain rule</strong> from the loss backward through the graph.</li>
+</ul>
+<h3 id="two-ways-to-get-gradients">Two ways to get gradients</h3>
+<pre><code class="language-python">import torch.nn.functional as F
+
+w = torch.tensor([1.5], requires_grad=True)
+b = torch.tensor([0.0], requires_grad=True)
+x, y = torch.tensor([2.0]), torch.tensor([1.0])
+
+loss = F.binary_cross_entropy(torch.sigmoid(x * w + b), y)
+
+# Option A: manual (debugging / experiments)
+# from torch.autograd import grad
+# dw = grad(loss, w, retain_graph=True)
+
+# Option B: the usual way
+loss.backward()
+print(w.grad, b.grad)
+</code></pre>
+<p><strong>Key points</strong>
+- The graph is freed after computing gradients unless <code>retain_graph=True</code>.
+- <code>.backward()</code> fills <code>.grad</code> on all leaf tensors.
+- Takeaway: you rarely compute derivatives by hand — PyTorch does the calculus.</p>
+<hr />
+<h2 id="5-building-neural-networks-with-nnmodule">5. Building Neural Networks with <code>nn.Module</code></h2>
+<h3 id="pattern">Pattern</h3>
+<ul>
+<li>Subclass <code>torch.nn.Module</code></li>
+<li>Define layers in <code>__init__</code></li>
+<li>Define data flow in <code>forward</code></li>
+<li><code>backward</code> is generated automatically</li>
+</ul>
+<pre><code class="language-python">class MLP(torch.nn.Module):
+    def __init__(self, n_in, n_out):
+        super().__init__()
+        self.net = torch.nn.Sequential(
+            torch.nn.Linear(n_in, 32),
+            torch.nn.ReLU(),
+            torch.nn.Linear(32, 16),
+            torch.nn.ReLU(),
+            torch.nn.Linear(16, n_out),   # outputs raw logits
+        )
+
+    def forward(self, x):
+        return self.net(x)
+</code></pre>
+<h3 id="useful-inspections">Useful inspections</h3>
+<ul>
+<li><code>print(model)</code> — architecture summary</li>
+<li>Count trainable params:
+  <code>python
+  sum(p.numel() for p in model.parameters() if p.requires_grad)</code></li>
+<li>Access a layer's weights: <code>model.net[0].weight</code>, <code>.bias</code>, <code>.shape</code></li>
+</ul>
+<h3 id="concepts-worth-remembering">Concepts worth remembering</h3>
+<ul>
+<li><strong><code>nn.Linear</code></strong> = weight matrix multiply + bias ("fully connected" / "feedforward" layer).</li>
+<li><strong>Random init</strong> breaks symmetry so neurons learn different things.</li>
+<li><strong>Reproducibility:</strong> <code>torch.manual_seed(123)</code> before creating the model.</li>
+<li><strong><code>grad_fn</code></strong> on an output (e.g. <code>AddmmBackward0</code>) shows the last op recorded in the graph.</li>
+</ul>
+<h3 id="inference-best-practices">Inference best practices</h3>
+<ul>
+<li>Wrap prediction in <code>torch.no_grad()</code> → saves memory &amp; compute.</li>
+<li>Models return <strong>logits</strong> (no softmax) because loss functions like <code>cross_entropy</code> apply softmax internally for numerical stability.</li>
+<li>Want probabilities? Call <code>torch.softmax(logits, dim=1)</code> explicitly.</li>
+</ul>
+<hr />
+<h2 id="6-efficient-data-loading">6. Efficient Data Loading</h2>
+<p><strong>Two classes:</strong>
+- <strong><code>Dataset</code></strong> — how to fetch <em>one</em> example
+- <strong><code>DataLoader</code></strong> — shuffling, batching, parallel loading</p>
+<h3 id="custom-dataset-three-required-methods">Custom Dataset: three required methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>__init__</code></td>
+<td>Store data / paths / connections</td>
+</tr>
+<tr>
+<td><code>__getitem__(i)</code></td>
+<td>Return one <code>(features, label)</code> pair</td>
+</tr>
+<tr>
+<td><code>__len__</code></td>
+<td>Number of examples</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-python">from torch.utils.data import Dataset, DataLoader
+
+class MyDataset(Dataset):
+    def __init__(self, X, y):
+        self.X, self.y = X, y
+    def __getitem__(self, i):
+        return self.X[i], self.y[i]
+    def __len__(self):
+        return len(self.y)
+
+loader = DataLoader(MyDataset(X, y), batch_size=32,
+                    shuffle=True, drop_last=True, num_workers=4)
+</code></pre>
+<h3 id="dataloader-settings-cheat-sheet">DataLoader settings cheat sheet</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Guidance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>shuffle=True</code></td>
+<td>For training; order changes each epoch (avoids repetitive update cycles)</td>
+</tr>
+<tr>
+<td><code>shuffle=False</code></td>
+<td>For validation/test</td>
+</tr>
+<tr>
+<td><code>drop_last=True</code></td>
+<td>Drops a small final batch that can hurt convergence</td>
+</tr>
+<tr>
+<td><code>num_workers=0</code></td>
+<td>Loads in main process — can starve the GPU on big jobs</td>
+</tr>
+<tr>
+<td><code>num_workers&gt;0</code></td>
+<td>Parallel loading; ~4 is often a good start. Avoid in Jupyter / tiny datasets</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Class labels</strong> must start at 0 and go up to <code>num_output_nodes - 1</code>.</p>
+<p><strong>Epoch</strong> = one full pass over the training set.</p>
+<hr />
+<h2 id="7-a-typical-training-loop">7. A Typical Training Loop</h2>
+<pre><code class="language-python">model = MLP(n_in=2, n_out=2)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.5)
+
+for epoch in range(num_epochs):
+    model.train()
+    for features, labels in train_loader:
+        logits = model(features)
+        loss = F.cross_entropy(logits, labels)
+
+        optimizer.zero_grad()   # 1. clear old gradients
+        loss.backward()         # 2. compute new gradients
+        optimizer.step()        # 3. update parameters
+
+    model.eval()
+    # evaluate on validation data here
+</code></pre>
+<h3 id="the-core-three-step-rhythm">The core three-step rhythm</h3>
+<ol>
+<li><code>optimizer.zero_grad()</code> — <strong>don't forget</strong>, or gradients accumulate</li>
+<li><code>loss.backward()</code></li>
+<li><code>optimizer.step()</code></li>
+</ol>
+<h3 id="train-vs-eval-mode">Train vs eval mode</h3>
+<ul>
+<li><code>model.train()</code> / <code>model.eval()</code> matter for <strong>dropout</strong> and <strong>batch norm</strong>.</li>
+<li>Include them always — protects you when the architecture changes later.</li>
+</ul>
+<h3 id="hyperparameters-data-splits">Hyperparameters &amp; data splits</h3>
+<ul>
+<li>Learning rate and number of epochs are <strong>hyperparameters</strong> — tuned by watching the loss.</li>
+<li><strong>Validation set:</strong> used many times to tune hyperparameters.</li>
+<li><strong>Test set:</strong> use once, at the end, for an unbiased estimate.</li>
+</ul>
+<h3 id="from-logits-to-predictions">From logits to predictions</h3>
+<ul>
+<li><code>torch.argmax(logits, dim=1)</code> → predicted class (softmax not required for argmax).</li>
+<li>Accuracy = <code>(preds == labels).sum() / len(labels)</code>.</li>
+<li>For large data, compute accuracy <strong>batch-by-batch</strong> through a DataLoader:</li>
+</ul>
+<pre><code class="language-python">def accuracy(model, loader):
+    model.eval()
+    correct, total = 0, 0
+    with torch.no_grad():
+        for x, y in loader:
+            preds = model(x).argmax(dim=1)
+            correct += (preds == y).sum().item()
+            total += y.size(0)
+    return correct / total
+</code></pre>
+<hr />
+<h2 id="8-saving-loading-models">8. Saving &amp; Loading Models</h2>
+<p><strong>Recommended:</strong> save the <code>state_dict</code> (parameter dictionary), not the whole object.</p>
+<pre><code class="language-python"># Save
+torch.save(model.state_dict(), &quot;model.pth&quot;)
+
+# Load
+model = MLP(2, 2)  # architecture must match exactly
+model.load_state_dict(torch.load(&quot;model.pth&quot;, weights_only=True))
+</code></pre>
+<ul>
+<li><code>.pth</code> / <code>.pt</code> are conventional extensions.</li>
+<li>You need a model instance in memory before loading weights.</li>
+</ul>
+<hr />
+<h2 id="9-training-on-gpus">9. Training on GPUs</h2>
+<h3 id="91-device-basics">9.1 Device basics</h3>
+<ul>
+<li>A <strong>device</strong> is where tensors live and ops run (<code>"cpu"</code>, <code>"cuda"</code>, <code>"cuda:1"</code>, <code>"mps"</code>).</li>
+<li>Move with <code>.to(device)</code>.</li>
+<li><strong>All tensors in an operation must be on the same device</strong> — otherwise <code>RuntimeError</code>.</li>
+</ul>
+<h3 id="92-single-gpu-training-only-3-changes">9.2 Single-GPU training — only 3 changes</h3>
+<pre><code class="language-python">device = torch.device(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+# Apple Silicon: &quot;mps&quot; if torch.backends.mps.is_available() else &quot;cpu&quot;
+
+model.to(device)                                  # change 1 &amp; 2
+for features, labels in train_loader:
+    features, labels = features.to(device), labels.to(device)  # change 3
+    ...
+</code></pre>
+<ul>
+<li>Tiny models may not speed up (transfer overhead); big models / LLMs benefit hugely.</li>
+</ul>
+<h3 id="93-multi-gpu-with-distributeddataparallel-ddp">9.3 Multi-GPU with DistributedDataParallel (DDP)</h3>
+<p><strong>How DDP works</strong>
+1. One process per GPU, each with a <strong>full model copy</strong>.
+2. <code>DistributedSampler</code> gives each GPU a <strong>different, non-overlapping</strong> slice of data.
+3. Each GPU runs forward + backward independently.
+4. Gradients are <strong>averaged and synced</strong> across GPUs → all copies stay identical.
+5. Result: near-linear speedup (2 GPUs ≈ 2× faster per epoch, minus communication overhead).</p>
+<p><strong>Key building blocks</strong>
+| Piece | Role |
+|---|---|
+| <code>init_process_group(backend=...)</code> | Start distributed communication (<code>nccl</code> on Linux/NVIDIA, <code>gloo</code> on Windows) |
+| <code>torch.cuda.set_device(rank)</code> | Pin each process to its GPU |
+| <code>DistributedSampler(dataset)</code> | Split data across processes (set <code>shuffle=False</code> on the DataLoader) |
+| <code>DDP(model, device_ids=[rank])</code> | Wrap the model; original is at <code>model.module</code> |
+| <code>sampler.set_epoch(epoch)</code> | Different shuffle order each epoch |
+| <code>destroy_process_group()</code> | Clean shutdown |</p>
+<p><strong>Skeleton</strong></p>
+<pre><code class="language-python">import os
+from torch.utils.data.distributed import DistributedSampler
+from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.distributed import init_process_group, destroy_process_group
+
+def main(rank, world_size):
+    os.environ.setdefault(&quot;MASTER_ADDR&quot;, &quot;localhost&quot;)
+    os.environ.setdefault(&quot;MASTER_PORT&quot;, &quot;12355&quot;)
+    init_process_group(&quot;nccl&quot;, rank=rank, world_size=world_size)
+    torch.cuda.set_device(rank)
+
+    loader = DataLoader(ds, batch_size=32, shuffle=False,
+                        sampler=DistributedSampler(ds), pin_memory=True)
+    model = DDP(MLP(2, 2).to(rank), device_ids=[rank])
+    # ... standard training loop, calling loader.sampler.set_epoch(epoch) ...
+
+    destroy_process_group()
+
+if __name__ == &quot;__main__&quot;:
+    world_size = int(os.environ.get(&quot;WORLD_SIZE&quot;, 1))
+    rank = int(os.environ.get(&quot;LOCAL_RANK&quot;, 0))
+    main(rank, world_size)
+</code></pre>
+<p><strong>Launching with <code>torchrun</code></strong> (handles process spawning + env vars like <code>RANK</code>, <code>LOCAL_RANK</code>, <code>WORLD_SIZE</code>):</p>
+<pre><code class="language-bash">torchrun --nproc_per_node=2 train_ddp.py
+torchrun --nproc_per_node=$(nvidia-smi -L | wc -l) train_ddp.py   # all GPUs
+</code></pre>
+<p><strong>DDP gotchas</strong>
+- ❌ Doesn't work in Jupyter — run as a script.
+- Duplicate log lines → each process prints. Guard with <code>if rank == 0:</code>.
+- Tiny datasets may leave some GPUs with zero batches → enlarge data for more GPUs.
+- Model too big for one GPU? Look at <strong>FSDP</strong> (Fully Sharded Data Parallel).</p>
+<hr />
+<h2 id="10-quick-reference-gotchas">10. Quick Reference &amp; Gotchas</h2>
+<p><strong>Checklist for any training script</strong>
+- [ ] <code>torch.manual_seed(...)</code> for reproducibility
+- [ ] Model returns logits; use <code>F.cross_entropy</code>
+- [ ] <code>optimizer.zero_grad()</code> → <code>loss.backward()</code> → <code>optimizer.step()</code>
+- [ ] <code>model.train()</code> / <code>model.eval()</code> toggled appropriately
+- [ ] <code>torch.no_grad()</code> for inference/evaluation
+- [ ] Model <strong>and</strong> data on the same device
+- [ ] Save with <code>state_dict()</code></p>
+<p><strong>Common errors</strong>
+| Symptom | Likely cause |
+|---|---|
+| "Expected all tensors to be on the same device" | Forgot <code>.to(device)</code> on data or model |
+| Loss explodes / weird training | Missing <code>zero_grad()</code> (gradient accumulation) |
+| Label index errors in loss | Labels not in <code>0 … num_classes-1</code> |
+| Notebook crash with DataLoader | <code>num_workers &gt; 0</code> in Jupyter |
+| Slow GPU training | Data loading bottleneck → raise <code>num_workers</code> |</p>
+<blockquote>
+<p>Why isn't <code>zero_grad()</code> automatic? Because sometimes you <em>want</em> to accumulate gradients (e.g., gradient accumulation to simulate larger batches on limited memory).</p>
+</blockquote>
+<hr />
+<h2 id="11-further-reading-from-the-tutorial">11. Further Reading (from the tutorial)</h2>
+<ul>
+<li><em>Machine Learning with PyTorch and Scikit-Learn</em> — Raschka, Liu, Mirjalili (2022)</li>
+<li><em>Deep Learning with PyTorch</em> — Stevens, Antiga, Viehmann (2021)</li>
+<li>Video: Tensors in Deep Learning — https://www.youtube.com/watch?v=JXfDlgrfOBY</li>
+<li>Model Evaluation, Selection &amp; Algorithm Selection — https://arxiv.org/abs/1811.12808</li>
+<li>Introduction to Calculus (free PDF) — https://sebastianraschka.com/pdf/supplementary/calculus.pdf</li>
+<li>Gradient accumulation for LLM finetuning — https://sebastianraschka.com/blog/2023/llm-grad-accumulation.html</li>
+<li>PyTorch FSDP intro — https://pytorch.org/blog/introducing-pytorch-fully-sharded-data-parallel-api/</li>
+<li>DDP API docs — https://pytorch.org/docs/stable/generated/torch.nn.parallel.DistributedDataParallel.html</li>
+</ul></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = ".",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="js/base.js"></script>
+        <script src="search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2026-10-03 23:42:12.394229+00:00
+-->
