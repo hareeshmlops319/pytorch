@@ -1,0 +1,16 @@
+site_name: PyTorch in One Hour Notes
+site_description: Personal study notes for PyTorch fundamentals and training workflows
+site_author: Haree
+repo_name: production-llm
+repo_url: https://github.com/
+
+nav:
+  - Home: index.md
+
+markdown_extensions:
+  - admonition
+  - tables
+  - attr_list
+
+extra:
+  generator: false
